@@ -48,3 +48,8 @@
       transform: rotate(360deg);
   }
 }
+
+.time {
+  font-size: 10px;
+  color: rgb(221, 221, 221);
+}

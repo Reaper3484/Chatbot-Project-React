@@ -27,6 +27,7 @@ function ChatMessages({ chatMessages, setShowScrollButton }) {
             <ChatMessage message={chatMessage.message}
                 sender={chatMessage.sender}
                 loading={chatMessage.loading}
+                time={chatMessage.time}
                 key={chatMessage.id} />
         )
     })
@@ -37,7 +38,7 @@ function ChatMessages({ chatMessages, setShowScrollButton }) {
     function handleScroll(ev) {
         const el = ev.currentTarget
 
-        const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 5
+        const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 100
 
         if (autoScrolling.current && isAtBottom) {
             autoScrolling.current = false

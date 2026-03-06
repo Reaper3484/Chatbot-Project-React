@@ -29,12 +29,14 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
                     message: inputText,
                     sender: "user",
                     loading: false,
+                    time: Date.now(),
                     id: crypto.randomUUID()
                 },
                 {
                     message: "...",
                     sender: "bot",
                     loading: true,
+                    time: Date.now(),
                     id: crypto.randomUUID()
                 }
             ])
@@ -51,6 +53,7 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
                         message: response,
                         sender: "bot",
                         loading: false,
+                        time: Date.now(),
                         id: crypto.randomUUID()
                     }
                 ]
@@ -69,7 +72,9 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
                 onKeyDown={sendMessage}
                 className="chat-input"
                 value={inputText} />
+
             <BackToBottomArrow visible={showScrollButton} setChatMessages={setChatMessages} />
+
             <button className={`send-button ${botThinking ? "button-disabled" : ""}`}
                 onClick={sendMessage}
                 disabled={botThinking}>

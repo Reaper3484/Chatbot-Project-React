@@ -3,8 +3,44 @@ import UserProfileImage from '../assets/user.png'
 import SpinnerImage from '../assets/spinner.png'
 import './ChatMessage.css'
 
-export function ChatMessage({ message, sender, loading }) {
+function formatChatTime(timestamp) {
+    const messageDate = new Date(timestamp)
+    const now = new Date()
+
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+    const yesterday = new Date(today)
+    yesterday.setDate(today.getDate() - 1)
+
+    const messageDay = new Date(
+        messageDate.getFullYear(),
+        messageDate.getMonth(),
+        messageDate.getDate()
+    )
+
+    const time = messageDate.toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+    })
+
+    if (messageDay.getTime() === today.getTime()) {
+        return time
+    }
+
+    if (messageDay.getTime() === yesterday.getTime()) {
+        return `Yesterday ${time}`
+    }
+
+    const date = messageDate.toLocaleDateString([], {
+        month: "short",
+        day: "numeric"
+    })
+
+    return `${date} ${time}`
+}
+
+export function ChatMessage({ message, sender, loading, time}) {
     const isBot = sender === "bot"
+    const timeString = formatChatTime(time)
 
     return (
         <div className={isBot ? "chat-message-bot" : "chat-message-user"}>
@@ -19,6 +55,7 @@ export function ChatMessage({ message, sender, loading }) {
             ) : (
                 <div className="chat-message-text">
                     {message}
+                    <div className='time'>{timeString}</div>
                 </div>
             )}
 
