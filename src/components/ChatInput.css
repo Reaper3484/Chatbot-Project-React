@@ -23,3 +23,7 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+
+.button-disabled {
+  background-color: rgb(17, 80, 50);
+}

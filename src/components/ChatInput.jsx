@@ -69,8 +69,12 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
                 onKeyDown={sendMessage}
                 className="chat-input"
                 value={inputText} />
-            <BackToBottomArrow visible={showScrollButton} setChatMessages={setChatMessages}/>
-            <button className="send-button" disabled={botThinking} onClick={sendMessage}>Send</button>
+            <BackToBottomArrow visible={showScrollButton} setChatMessages={setChatMessages} />
+            <button className={`send-button ${botThinking ? "button-disabled" : ""}`}
+                onClick={sendMessage}
+                disabled={botThinking}>
+                Send
+            </button>
         </div>
     )
 }
