@@ -5,12 +5,19 @@ import './ChatMessages.css'
 
 function useAutoScroll(dependecyArray, autoScrolling) {
     const elemRef = useRef(null)
+    const firstRender = useRef(true)
 
     useEffect(() => {
         const containerElm = elemRef.current
-        if (containerElm) {
-            autoScrolling.current = true
 
+        if (!containerElm) return 
+
+        autoScrolling.current = true
+
+        if (firstRender.current) {
+            containerElm.scrollTop = containerElm.scrollHeight
+            firstRender.current = false
+        } else {
             containerElm.scrollTo({
                 top: containerElm.scrollHeight,
                 behavior: "smooth"
