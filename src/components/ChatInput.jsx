@@ -63,6 +63,11 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
         }
     }
 
+    function clearStorage() {
+        setChatMessages([])
+        localStorage.clear()
+    }
+
     return (
         <div className="chat-input-container">
             <input
@@ -79,6 +84,11 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
                 onClick={sendMessage}
                 disabled={botThinking}>
                 Send
+            </button>
+
+            <button className="clear-button"
+                onClick={clearStorage}>
+                Clear
             </button>
         </div>
     )
