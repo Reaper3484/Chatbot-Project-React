@@ -19,12 +19,10 @@ function App() {
         : null}
 
       <ChatMessages chatMessages={chatMessages}
-        showScrollButton={showScrollButton}
         setShowScrollButton={setShowScrollButton} />
 
       <ChatInput setChatMessages={setChatMessages}
-        showScrollButton={showScrollButton}
-        setShowScrollButton={setShowScrollButton} />
+        showScrollButton={showScrollButton} />
     </div>
   )
 }

@@ -1,7 +1,6 @@
 import { useState } from "react"
 import { Chatbot } from 'supersimpledev'
 import './ChatInput.css'
-import BackToBottomArrow from "./BackToBottomArrow"
 
 export function ChatInput({ setChatMessages, showScrollButton }) {
     const [inputText, setInputText] = useState('')
@@ -63,6 +62,10 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
         }
     }
 
+    function scrollToBottom() {
+        setChatMessages(prev => [...prev])
+    }
+
     function clearStorage() {
         setChatMessages([])
         localStorage.clear()
@@ -78,15 +81,21 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
                 className="chat-input"
                 value={inputText} />
 
-            <BackToBottomArrow visible={showScrollButton} setChatMessages={setChatMessages} />
+            <button
+                onClick={scrollToBottom}
+                className={`arrow-container ${showScrollButton ? "arrow-visible" : "arrow-hidden"}`}>
+                ⬇️
+            </button>
 
-            <button className={`send-button ${botThinking ? "button-disabled" : ""}`}
+            <button
+                className={`send-button ${botThinking ? "button-disabled" : ""}`}
                 onClick={sendMessage}
                 disabled={botThinking}>
                 Send
             </button>
 
-            <button className="clear-button"
+            <button 
+                className="clear-button"
                 onClick={clearStorage}>
                 Clear
             </button>
