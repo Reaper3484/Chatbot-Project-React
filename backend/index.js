@@ -22,8 +22,8 @@ app.post('/chat', async (req, res) => {
     const { message } = req.body
 
     try {
-
-        const result = await model.generateContent(message)
+        const finalMessage = `${message} Be brief in response.`
+        const result = await model.generateContent(finalMessage)
         const response = result.response.text()
 
         res.json({ reply: response })

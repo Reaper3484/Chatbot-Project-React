@@ -1,3 +1,5 @@
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import BotProfileImage from '../assets/bot.png'
 import UserProfileImage from '../assets/user.png'
 import SpinnerImage from '../assets/spinner.png'
@@ -62,7 +64,10 @@ export function ChatMessage({ message, sender, loading, time, isLastMessage, reg
                 </div>
             ) : (
                 <div className="chat-message-text">
-                    {message}
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                        {message}
+                    </ReactMarkdown>
+
                     <div className='time'>{timeString}</div>
                 </div>
             )}

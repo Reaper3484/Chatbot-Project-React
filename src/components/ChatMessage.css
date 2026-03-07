@@ -35,9 +35,27 @@
   margin-left: 10px;
   margin-right: 10px;
   border-radius: 10px;
-  max-width: 300px;
+  max-width: 500px;
   min-width: 0px;
   overflow-wrap: break-word;
+}
+
+.chat-message-text p,
+.chat-message-text ul,
+.chat-message-text ol {
+  margin: 4px 0;
+}
+
+.chat-message-text pre {
+  background: #1e1e1e;
+  color: #fff;
+  padding: 12px;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.chat-message-text code {
+  font-family: monospace;
 }
 
 .chat-message-profile {
