@@ -28,13 +28,20 @@ function useAutoScroll(dependecyArray, autoScrolling) {
     return elemRef
 }
 
-function ChatMessages({ chatMessages, setShowScrollButton }) {
-    const chatMessagesCards = chatMessages.map((chatMessage) => {
+function ChatMessages({ chatMessages, setShowScrollButton, regenerateResponse }) {
+    const chatMessagesCards = chatMessages.map((chatMessage, index) => {
+        const isLastBotMessage =
+            index === chatMessages.length - 1
+            && !chatMessage.loading
+            && chatMessage.sender === 'bot'
+
         return (
             <ChatMessage message={chatMessage.message}
                 sender={chatMessage.sender}
                 loading={chatMessage.loading}
                 time={chatMessage.time}
+                isLastMessage={isLastBotMessage}
+                regenerateResponse={regenerateResponse}
                 key={chatMessage.id} />
         )
     })

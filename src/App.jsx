@@ -76,6 +76,12 @@ function App() {
       localStorage.clear()
   }
 
+  function regenerateResponse() {
+    const userMessage = chatMessages.at(-2)
+    setChatMessages(prev => prev.slice(0, -2))
+    sendMessage(userMessage.message)
+  }
+
   return (
     <div className="app-container">
       {chatMessages.length === 0
@@ -83,6 +89,7 @@ function App() {
         : null}
 
       <ChatMessages chatMessages={chatMessages}
+        regenerateResponse={regenerateResponse}
         setShowScrollButton={setShowScrollButton} />
 
       <ChatInput 
