@@ -15,26 +15,36 @@ const PORT = process.env.PORT || 5000
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
 const model = genAI.getGenerativeModel({
-    model: "gemini-2.5-flash"
+    model: "gemini-3.1-flash-lite-preview"
 })
 
-app.post('/chat', async (req, res) => {
-    const { message } = req.body
+app.post("/chat", async (req, res) => {
 
-    try {
-        const finalMessage = `${message} Be brief in response.`
-        const result = await model.generateContent(finalMessage)
-        const response = result.response.text()
+  const { messages } = req.body
 
-        res.json({ reply: response })
-    } catch (err) {
-        console.log(err)
+  const history = messages.slice(0, -1).map(msg => ({
+    role: msg.sender === "user" ? "user" : "model",
+    parts: [{ text: msg.message }]
+  }))
 
-        res.status(500).json({
-            reply: "Something went wrong!"
-        })
-    }
+  try {
 
+    const chat = model.startChat({
+      history
+    })
+
+    const result = await chat.sendMessage(messages.at(-1).message)
+
+    const reply = result.response.text()
+
+    res.json({ reply })
+
+  } catch (err) {
+
+    console.error(err)
+
+    res.status(500).json({ reply: "Something went wrong." })
+  }
 })
 
 app.listen(PORT, () => { console.log(`Server running on port: ${PORT}`) })

@@ -25,7 +25,7 @@ function App() {
     localStorage.setItem('messages', JSON.stringify(chatMessages))
   }, [chatMessages])
 
-  async function sendMessage(inputText) {
+  async function sendMessage(inputText, baseMessages = chatMessages) {
       if (botThinking) return
       if (!inputText.trim()) return
 
@@ -49,6 +49,15 @@ function App() {
               id: crypto.randomUUID()
           }
       ])
+      
+      const updatedMessages = [
+        ...baseMessages,
+        {
+          message: inputText,
+          sender: "user",
+          loading: false
+        }
+      ]
 
       const response = await fetch("http://localhost:5000/chat", {
         method: "POST",
@@ -56,7 +65,7 @@ function App() {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          message: inputText
+          messages: updatedMessages
         })
       })
 
@@ -92,9 +101,10 @@ function App() {
   }
 
   function regenerateResponse() {
+    const trimmedMessages = chatMessages.slice(0, -2)
     const userMessage = chatMessages.at(-2)
-    setChatMessages(prev => prev.slice(0, -2))
-    sendMessage(userMessage.message)
+    setChatMessages(trimmedMessages)
+    sendMessage(userMessage.message, trimmedMessages)
   }
 
   function editResponse() {
@@ -112,7 +122,6 @@ function App() {
     setTimeout(() => {
       setChatMessages(prev => prev.slice(0, -2))
       setDraftMessage(userMessage.message)
-      console.log("Deleted")
     }, 250);
   }
 
