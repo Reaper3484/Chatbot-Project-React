@@ -74,3 +74,24 @@
 
   transition: opacity 0.3s ease, transform 0.2s ease;
 }
+
+.chat-message-user:hover .edit-button{
+  opacity: 1;
+  pointer-events: auto;
+  transform: scale(1);
+}
+
+.edit-button {
+  background-color: grey; 
+  border: none;
+  border-radius: 10px;
+  padding: 5px;
+  font-size: large;
+  cursor: pointer;
+
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0.9);
+
+  transition: opacity 0.3s ease, transform 0.2s ease;
+}

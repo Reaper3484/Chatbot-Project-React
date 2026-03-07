@@ -1,21 +1,22 @@
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import './ChatInput.css'
 
-export function ChatInput({ showScrollButton, sendMessage, botThinking, clearStorage, scrollToBottom }) {
+export function ChatInput({ showScrollButton, sendMessage, botThinking, clearStorage, scrollToBottom, draftMessage }) {
     const [inputText, setInputText] = useState('')
+    const inputRef = useRef(null)
 
     function updateText(event) {
         setInputText(event.target.value)
     }
 
-    async function submitMessage() {
+    function submitMessage() {
         if (botThinking) return
         if (!inputText.trim()) return
         sendMessage(inputText)
         setInputText("")
     }
 
-    async function handleKeyDown(event) {
+    function handleKeyDown(event) {
         if (event.key == "Escape") {
             setInputText("")
             return
@@ -26,6 +27,11 @@ export function ChatInput({ showScrollButton, sendMessage, botThinking, clearSto
         }
     }
 
+    useEffect(() => {
+        setInputText(draftMessage)
+        inputRef.current.focus()
+    }, [draftMessage])
+
     return (
         <div className="chat-input-container">
             <input
@@ -34,6 +40,7 @@ export function ChatInput({ showScrollButton, sendMessage, botThinking, clearSto
                 onChange={updateText}
                 onKeyDown={handleKeyDown}
                 className="chat-input"
+                ref={inputRef}
                 value={inputText} />
 
             <button

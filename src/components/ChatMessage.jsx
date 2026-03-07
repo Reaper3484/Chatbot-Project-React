@@ -38,12 +38,20 @@ function formatChatTime(timestamp) {
     return `${date} ${time}`
 }
 
-export function ChatMessage({ message, sender, loading, time, isLastMessage, regenerateResponse }) {
+export function ChatMessage({ message, sender, loading, time, isLastMessage, regenerateResponse, editResponse }) {
     const isBot = sender === "bot"
     const timeString = formatChatTime(time)
 
     return (
         <div className={isBot ? "chat-message-bot" : "chat-message-user"}>
+            {isLastMessage && !isBot && (
+                <button
+                    onClick={editResponse}
+                    className='edit-button'>
+                    ✏️
+                </button>
+            )}
+
             {isBot && (
                 <img src={BotProfileImage} className="chat-message-profile" />
             )}
@@ -63,7 +71,7 @@ export function ChatMessage({ message, sender, loading, time, isLastMessage, reg
                 <img src={UserProfileImage} className="chat-message-profile" />
             )}
 
-            {isLastMessage && (
+            {isLastMessage && isBot && (
                 <button
                     onClick={regenerateResponse}
                     className='retry-button'>

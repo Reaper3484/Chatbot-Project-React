@@ -20,6 +20,7 @@ function App() {
 
   const [showScrollButton, setShowScrollButton] = useState(false)
   const [botThinking, setBotThinking] = useState(false)
+  const [draftMessage, setDraftMessage] = useState("")
 
   useEffect(() => {
     localStorage.setItem('messages', JSON.stringify(chatMessages))
@@ -82,6 +83,12 @@ function App() {
     sendMessage(userMessage.message)
   }
 
+  function editResponse() {
+    const userMessage = chatMessages.at(-2)
+    setChatMessages(prev => prev.slice(0, -2))
+    setDraftMessage(userMessage.message)
+  }
+
   return (
     <div className="app-container">
       {chatMessages.length === 0
@@ -90,6 +97,7 @@ function App() {
 
       <ChatMessages chatMessages={chatMessages}
         regenerateResponse={regenerateResponse}
+        editResponse={editResponse}
         setShowScrollButton={setShowScrollButton} />
 
       <ChatInput 
@@ -97,6 +105,7 @@ function App() {
         botThinking={botThinking}
         scrollToBottom={scrollToBottom}
         clearStorage={clearStorage}
+        draftMessage={draftMessage}
         showScrollButton={showScrollButton} />
     </div>
   )
