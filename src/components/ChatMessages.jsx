@@ -39,6 +39,7 @@ function ChatMessages({ chatMessages, setShowScrollButton, regenerateResponse, e
                 sender={chatMessage.sender}
                 loading={chatMessage.loading}
                 time={chatMessage.time}
+                removing={chatMessage.removing}
                 isLastMessage={isLastMessage}
                 regenerateResponse={regenerateResponse}
                 editResponse={editResponse}

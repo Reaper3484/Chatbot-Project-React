@@ -38,6 +38,7 @@ function App() {
               sender: "user",
               loading: false,
               time: Date.now(),
+              removing: false,
               id: crypto.randomUUID()
           },
           {
@@ -45,6 +46,7 @@ function App() {
               sender: "bot",
               loading: true,
               time: Date.now(),
+              removing: false,
               id: crypto.randomUUID()
           }
       ])
@@ -60,6 +62,7 @@ function App() {
                   sender: "bot",
                   loading: false,
                   time: Date.now(),
+                  removing: false,
                   id: crypto.randomUUID()
               }
           ]
@@ -85,8 +88,21 @@ function App() {
 
   function editResponse() {
     const userMessage = chatMessages.at(-2)
-    setChatMessages(prev => prev.slice(0, -2))
-    setDraftMessage(userMessage.message)
+
+    setChatMessages(prev => 
+      prev.map((msg, i) => {
+        if (i >= prev.length - 2) {
+          return {...msg, removing: true}
+        }
+        return msg
+      })
+    )
+
+    setTimeout(() => {
+      setChatMessages(prev => prev.slice(0, -2))
+      setDraftMessage(userMessage.message)
+      console.log("Deleted")
+    }, 250);
   }
 
   return (

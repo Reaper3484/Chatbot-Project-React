@@ -3,12 +3,30 @@
   align-items: start;
   justify-content: right;
   margin-bottom: 10px;
+  
+  transition: 
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    max-height 0.25s ease,
+    margin 0.25s ease;
+
+  max-height: 1000px;
+  overflow: hidden;
 }
 
 .chat-message-bot {
   display: flex;
   align-items: start;
   margin-bottom: 10px;
+
+  transition: 
+    opacity 0.25s ease,
+    transform 0.25s ease,
+    max-height 0.25s ease,
+    margin 0.25s ease;
+
+  max-height: 1000px;
+  overflow: hidden;
 }
 
 .chat-message-text {
@@ -94,4 +112,12 @@
   transform: scale(0.9);
 
   transition: opacity 0.3s ease, transform 0.2s ease;
+}
+
+.is-removing {
+  opacity: 0;
+  transform: translateY(10px);
+
+  max-height: 0;
+  margin-bottom: 0;
 }
