@@ -1,74 +1,29 @@
 import { useState } from "react"
-import { Chatbot } from 'supersimpledev'
 import './ChatInput.css'
 
-export function ChatInput({ setChatMessages, showScrollButton }) {
+export function ChatInput({ showScrollButton, sendMessage, botThinking, clearStorage, scrollToBottom }) {
     const [inputText, setInputText] = useState('')
-    const [botThinking, setBotThinking] = useState(false)
 
     function updateText(event) {
         setInputText(event.target.value)
     }
 
-    async function sendMessage(event) {
+    async function submitMessage() {
         if (botThinking) return
+        if (!inputText.trim()) return
+        sendMessage(inputText)
+        setInputText("")
+    }
 
+    async function handleKeyDown(event) {
         if (event.key == "Escape") {
             setInputText("")
             return
         }
 
-        if (event.key == "Enter" || !event.key) {
-            if (!inputText.trim()) return
-
-            setBotThinking(true)
-            setChatMessages(prev => [
-                ...prev,
-                {
-                    message: inputText,
-                    sender: "user",
-                    loading: false,
-                    time: Date.now(),
-                    id: crypto.randomUUID()
-                },
-                {
-                    message: "...",
-                    sender: "bot",
-                    loading: true,
-                    time: Date.now(),
-                    id: crypto.randomUUID()
-                }
-            ])
-
-            setInputText('')
-
-            const response = await Chatbot.getResponseAsync(inputText)
-
-            setChatMessages(prev => {
-                const oldArray = prev.slice(0, -1)
-                return [
-                    ...oldArray,
-                    {
-                        message: response,
-                        sender: "bot",
-                        loading: false,
-                        time: Date.now(),
-                        id: crypto.randomUUID()
-                    }
-                ]
-            })
-
-            setBotThinking(false)
+        if (event.key == "Enter") {
+            submitMessage()
         }
-    }
-
-    function scrollToBottom() {
-        setChatMessages(prev => [...prev])
-    }
-
-    function clearStorage() {
-        setChatMessages([])
-        localStorage.clear()
     }
 
     return (
@@ -77,7 +32,7 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
                 placeholder="Send a message to ChatBot"
                 size="30"
                 onChange={updateText}
-                onKeyDown={sendMessage}
+                onKeyDown={handleKeyDown}
                 className="chat-input"
                 value={inputText} />
 
@@ -89,7 +44,7 @@ export function ChatInput({ setChatMessages, showScrollButton }) {
 
             <button
                 className={`send-button ${botThinking ? "button-disabled" : ""}`}
-                onClick={sendMessage}
+                onClick={submitMessage}
                 disabled={botThinking}>
                 Send
             </button>

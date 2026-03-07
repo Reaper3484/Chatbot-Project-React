@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import ChatMessages from './components/ChatMessages'
 import { ChatInput } from './components/ChatInput'
+import { Chatbot } from 'supersimpledev'
 import './App.css'
 
 
@@ -18,10 +19,62 @@ function App() {
   })
 
   const [showScrollButton, setShowScrollButton] = useState(false)
+  const [botThinking, setBotThinking] = useState(false)
 
   useEffect(() => {
     localStorage.setItem('messages', JSON.stringify(chatMessages))
   }, [chatMessages])
+
+  async function sendMessage(inputText) {
+      if (botThinking) return
+      if (!inputText.trim()) return
+
+      setBotThinking(true)
+      setChatMessages(prev => [
+          ...prev,
+          {
+              message: inputText,
+              sender: "user",
+              loading: false,
+              time: Date.now(),
+              id: crypto.randomUUID()
+          },
+          {
+              message: "...",
+              sender: "bot",
+              loading: true,
+              time: Date.now(),
+              id: crypto.randomUUID()
+          }
+      ])
+
+      const response = await Chatbot.getResponseAsync(inputText)
+
+      setChatMessages(prev => {
+          const oldArray = prev.slice(0, -1)
+          return [
+              ...oldArray,
+              {
+                  message: response,
+                  sender: "bot",
+                  loading: false,
+                  time: Date.now(),
+                  id: crypto.randomUUID()
+              }
+          ]
+      })
+
+      setBotThinking(false)
+  }
+
+  function scrollToBottom() {
+      setChatMessages(prev => [...prev])
+  }
+
+  function clearStorage() {
+      setChatMessages([])
+      localStorage.clear()
+  }
 
   return (
     <div className="app-container">
@@ -32,7 +85,11 @@ function App() {
       <ChatMessages chatMessages={chatMessages}
         setShowScrollButton={setShowScrollButton} />
 
-      <ChatInput setChatMessages={setChatMessages}
+      <ChatInput 
+        sendMessage={sendMessage}
+        botThinking={botThinking}
+        scrollToBottom={scrollToBottom}
+        clearStorage={clearStorage}
         showScrollButton={showScrollButton} />
     </div>
   )
