@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import ChatMessages from './components/ChatMessages'
 import { ChatInput } from './components/ChatInput'
-import { Chatbot } from 'supersimpledev'
 import './App.css'
 
 
@@ -51,14 +50,26 @@ function App() {
           }
       ])
 
-      const response = await Chatbot.getResponseAsync(inputText)
+      const response = await fetch("http://localhost:5000/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: inputText
+        })
+      })
+
+      const data = await response.json()
+
+      const reply = data.reply
 
       setChatMessages(prev => {
           const oldArray = prev.slice(0, -1)
           return [
               ...oldArray,
               {
-                  message: response,
+                  message: reply,
                   sender: "bot",
                   loading: false,
                   time: Date.now(),
