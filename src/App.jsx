@@ -5,7 +5,18 @@ import './App.css'
 
 
 function App() {
-  const [chatMessages, setChatMessages] = useState(JSON.parse(localStorage.getItem('messages')) || [])
+  const [chatMessages, setChatMessages] = useState(() => {
+    const messages = JSON.parse(localStorage.getItem('messages')) || [] 
+
+    const lastMessage = messages[messages.length - 1]
+    if (lastMessage?.loading) {
+      lastMessage.loading = false
+      lastMessage.message = "⚠️ Message failed to load"
+    }
+
+    return messages
+  })
+
   const [showScrollButton, setShowScrollButton] = useState(false)
 
   useEffect(() => {
