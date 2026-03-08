@@ -6,7 +6,7 @@ import './App.css'
 
 function App() {
   const [chatMessages, setChatMessages] = useState(() => {
-    const messages = JSON.parse(localStorage.getItem('messages')) || [] 
+    const messages = JSON.parse(localStorage.getItem('messages')) || []
 
     const lastMessage = messages[messages.length - 1]
     if (lastMessage?.loading) {
@@ -26,78 +26,108 @@ function App() {
   }, [chatMessages])
 
   async function sendMessage(inputText, baseMessages = chatMessages) {
-      if (botThinking) return
-      if (!inputText.trim()) return
+    if (botThinking) return
+    if (!inputText.trim()) return
 
-      setBotThinking(true)
-      setChatMessages(prev => [
-          ...prev,
-          {
-              message: inputText,
-              sender: "user",
-              loading: false,
-              time: Date.now(),
-              removing: false,
-              id: crypto.randomUUID()
-          },
-          {
-              message: "...",
-              sender: "bot",
-              loading: true,
-              time: Date.now(),
-              removing: false,
-              id: crypto.randomUUID()
-          }
-      ])
-      
-      const updatedMessages = [
-        ...baseMessages,
+    setBotThinking(true)
+    setChatMessages(prev => [
+      ...prev,
+      {
+        message: inputText,
+        sender: "user",
+        loading: false,
+        time: Date.now(),
+        removing: false,
+        id: crypto.randomUUID()
+      },
+      {
+        message: "...",
+        sender: "bot",
+        loading: true,
+        time: Date.now(),
+        removing: false,
+        id: crypto.randomUUID()
+      }
+    ])
+
+    const updatedMessages = [
+      ...baseMessages,
+      {
+        message: inputText,
+        sender: "user",
+        loading: false
+      }
+    ]
+
+    const response = await fetch("http://localhost:5000/chat", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        messages: updatedMessages
+      })
+    })
+
+    const data = await response.json()
+
+    const reply = data.reply
+    const words = reply.split(" ")
+
+    setChatMessages(prev => {
+      const oldArray = prev.slice(0, -1)
+      return [
+        ...oldArray,
         {
-          message: inputText,
-          sender: "user",
-          loading: false
+          message: "",
+          sender: "bot",
+          loading: false,
+          time: Date.now(),
+          removing: false,
+          id: crypto.randomUUID()
         }
       ]
+    })
 
-      const response = await fetch("http://localhost:5000/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          messages: updatedMessages
+    let index = 0
+    let visibleWords = []
+
+    function typeLoop() {
+
+      if (index < words.length) {
+
+        const chunkSize = 5 + Math.floor(Math.random() * 3)
+
+        visibleWords = words.slice(0, index + chunkSize)
+
+        setChatMessages(prev => {
+          const updated = [...prev]
+          updated[updated.length - 1].message = visibleWords.join(" ")
+          return updated
         })
-      })
 
-      const data = await response.json()
+        index += chunkSize
 
-      const reply = data.reply
+        const delay = 100 + Math.random() * 100
 
-      setChatMessages(prev => {
-          const oldArray = prev.slice(0, -1)
-          return [
-              ...oldArray,
-              {
-                  message: reply,
-                  sender: "bot",
-                  loading: false,
-                  time: Date.now(),
-                  removing: false,
-                  id: crypto.randomUUID()
-              }
-          ]
-      })
+        setTimeout(typeLoop, delay)
 
-      setBotThinking(false)
+      } else {
+        setBotThinking(false)
+      }
+    }
+
+    typeLoop()
+
   }
 
   function scrollToBottom() {
-      setChatMessages(prev => [...prev])
+    setChatMessages(prev => [...prev])
   }
 
   function clearStorage() {
-      setChatMessages([])
-      localStorage.clear()
+    setChatMessages([])
+    localStorage.clear()
   }
 
   function regenerateResponse() {
@@ -110,10 +140,10 @@ function App() {
   function editResponse() {
     const userMessage = chatMessages.at(-2)
 
-    setChatMessages(prev => 
+    setChatMessages(prev =>
       prev.map((msg, i) => {
         if (i >= prev.length - 2) {
-          return {...msg, removing: true}
+          return { ...msg, removing: true }
         }
         return msg
       })
@@ -136,7 +166,7 @@ function App() {
         editResponse={editResponse}
         setShowScrollButton={setShowScrollButton} />
 
-      <ChatInput 
+      <ChatInput
         sendMessage={sendMessage}
         botThinking={botThinking}
         scrollToBottom={scrollToBottom}
