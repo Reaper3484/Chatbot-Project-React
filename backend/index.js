@@ -1,5 +1,4 @@
 import express from 'express'
-import cors from 'cors'
 import dotenv from 'dotenv'
 import path from "path"
 import { GoogleGenerativeAI } from '@google/generative-ai'
@@ -11,7 +10,7 @@ const app = express()
 app.use(express.json())
 app.use(express.static(path.join(process.cwd(), "../dist")))
 
-const PORT = process.env.PORT || 5000
+const PORT = 5000
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
