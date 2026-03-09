@@ -72,17 +72,46 @@ function App() {
         })
       })
 
+      if (!response.ok) {
+
+        const errData = await response.json().catch(() => null)
+
+        console.error("❌ Backend error:", {
+          status: response.status,
+          body: errData
+        })
+
+        throw new Error(
+          errData?.error?.type || "SERVER_ERROR"
+        )
+      }
+
       data = await response.json()
 
     } catch (error) {
-      console.error(error)  
+
+      console.error("⚠️ sendMessage error")
+      console.error(error)
+
+      let errorMessage = "⚠️ Message failed to load"
+
+      if (error.message === "GEMINI_OVERLOAD") {
+        errorMessage = "⚠️ AI service busy. Try again."
+      }
+
+      if (error.message === "NETWORK_ERROR") {
+        errorMessage = "⚠️ Network error."
+      }
+
       setBotThinking(false)
+
       setChatMessages(prev => {
         const oldArray = prev.slice(0, -1)
+
         return [
           ...oldArray,
           {
-            message: "⚠️ Message failed to load",
+            message: errorMessage,
             sender: "bot",
             loading: false,
             time: Date.now(),
@@ -91,6 +120,7 @@ function App() {
           }
         ]
       })
+
       return
     }
 
