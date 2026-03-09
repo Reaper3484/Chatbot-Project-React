@@ -59,7 +59,7 @@ function App() {
       }
     ]
 
-    const response = await fetch("http://localhost:5000/chat", {
+    const response = await fetch("/chat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
