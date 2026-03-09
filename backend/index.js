@@ -1,12 +1,14 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import path from "path"
+import cors from 'cors'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 dotenv.config()
 
 const app = express()
 
+app.use(cors())
 app.use(express.json())
 app.use(express.static(path.join(process.cwd(), "../dist")))
 
