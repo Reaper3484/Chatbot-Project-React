@@ -59,17 +59,40 @@ function App() {
       }
     ]
 
-    const response = await fetch("http://localhost:5000/chat", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        messages: updatedMessages
-      })
-    })
+    let data = {}
 
-    const data = await response.json()
+    try {
+      const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          messages: updatedMessages
+        })
+      })
+
+      data = await response.json()
+
+    } catch (error) {
+      console.error(error)  
+      setBotThinking(false)
+      setChatMessages(prev => {
+        const oldArray = prev.slice(0, -1)
+        return [
+          ...oldArray,
+          {
+            message: "⚠️ Message failed to load",
+            sender: "bot",
+            loading: false,
+            time: Date.now(),
+            removing: false,
+            id: crypto.randomUUID()
+          }
+        ]
+      })
+      return
+    }
 
     const reply = data.reply
     const words = reply.split(" ")
