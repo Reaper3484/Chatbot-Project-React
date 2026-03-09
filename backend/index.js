@@ -83,9 +83,36 @@ app.post("/chat", async (req, res) => {
 
     const chat = model.startChat({ history })
 
-    const result = await chat.sendMessage(userPrompt)
+    res.setHeader("Content-Type", "text/plain")
+    res.setHeader("Transfer-Encoding", "chunked")
 
-    const reply = result.response.text()
+    try {
+      const result = await chat.sendMessageStream(userPrompt)
+
+      for await (const chunk of result.stream) {
+        const text = chunk.text()
+
+        if (!text) continue
+
+        res.write(text)
+      }
+
+      res.end()
+
+    } catch (err) {
+
+      console.error("⚠️ STREAM ERROR")
+      console.error(err)
+
+      if (!res.headersSent) {
+        res.status(500).json({
+          reply: "⚠️ Streaming failed.",
+          error: { type: "STREAM_ERROR" }
+        })
+      } else {
+        res.end()
+      }
+    }
 
     res.json({ reply })
 

@@ -26,10 +26,12 @@ function App() {
   }, [chatMessages])
 
   async function sendMessage(inputText, baseMessages = chatMessages) {
+
     if (botThinking) return
     if (!inputText.trim()) return
 
     setBotThinking(true)
+
     setChatMessages(prev => [
       ...prev,
       {
@@ -59,7 +61,8 @@ function App() {
       }
     ]
 
-    let data = {}
+    let streamBuffer = ""
+    let streamFinished = false
 
     try {
       const response = await fetch("/chat", {
@@ -73,20 +76,38 @@ function App() {
       })
 
       if (!response.ok) {
-
-        const errData = await response.json().catch(() => null)
-
-        console.error("❌ Backend error:", {
-          status: response.status,
-          body: errData
-        })
-
-        throw new Error(
-          errData?.error?.type || "SERVER_ERROR"
-        )
+        throw new Error("SERVER_ERROR")
       }
 
-      data = await response.json()
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+
+      async function readStream() {
+
+        try {
+
+          while (true) {
+
+            const { done, value } = await reader.read()
+
+            if (done) break
+
+            streamBuffer += decoder.decode(value, { stream: true })
+
+          }
+
+        } catch (err) {
+
+          console.error("🔥 Stream read error", err)
+
+        } finally {
+
+          streamFinished = true
+
+        }
+      }
+
+      readStream()
 
     } catch (error) {
 
@@ -124,9 +145,6 @@ function App() {
       return
     }
 
-    const reply = data.reply
-    const words = reply.split(" ")
-
     setChatMessages(prev => {
       const oldArray = prev.slice(0, -1)
       return [
@@ -142,36 +160,48 @@ function App() {
       ]
     })
 
-    let index = 0
-    let visibleWords = []
+    let printedWords = 0
 
     function typeLoop() {
 
-      if (index < words.length) {
+      const words = streamBuffer.split(" ")
+
+      if (printedWords < words.length) {
 
         const chunkSize = 5 + Math.floor(Math.random() * 3)
 
-        visibleWords = words.slice(0, index + chunkSize)
+        printedWords = Math.min(
+          printedWords + chunkSize,
+          words.length
+        )
+
+        const visibleWords = words.slice(0, printedWords)
 
         setChatMessages(prev => {
           const updated = [...prev]
-          updated[updated.length - 1].message = visibleWords.join(" ")
+
+          updated[updated.length - 1].message =
+            visibleWords.join(" ")
+
           return updated
         })
 
-        index += chunkSize
+      }
+
+      if (!streamFinished || printedWords < words.length) {
 
         const delay = 100 + Math.random() * 100
 
         setTimeout(typeLoop, delay)
 
       } else {
+
         setBotThinking(false)
+
       }
     }
 
     typeLoop()
-
   }
 
   function scrollToBottom() {
