@@ -27,7 +27,7 @@ app.post("/chat", async (req, res) => {
   const { messages } = req.body
 
   try {
-    const lastMessages = messages.slice(-20)
+    const lastMessages = messages.slice(-21)
 
     const history = lastMessages.slice(0, -1).map(msg => ({
       role: msg.sender === "user" ? "user" : "model",
