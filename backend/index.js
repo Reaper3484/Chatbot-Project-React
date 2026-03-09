@@ -1,5 +1,6 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import path from "path"
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 dotenv.config()
@@ -7,6 +8,7 @@ dotenv.config()
 const app = express()
 
 app.use(express.json())
+app.use(express.static(path.join(process.cwd(), "../dist")))
 
 const PORT = 5000
 
@@ -14,6 +16,10 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
 const model = genAI.getGenerativeModel({
   model: "gemini-3.1-flash-lite-preview"
+})
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(process.cwd(), "../dist", "index.html"))
 })
 
 app.post("/chat", async (req, res) => {
