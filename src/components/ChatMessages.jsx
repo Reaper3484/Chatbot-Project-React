@@ -53,7 +53,7 @@ function ChatMessages({ chatMessages, setShowScrollButton, regenerateResponse, e
     function handleScroll(ev) {
         const el = ev.currentTarget
 
-        const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 100
+        const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 10
 
         if (autoScrolling.current && isAtBottom) {
             autoScrolling.current = false
